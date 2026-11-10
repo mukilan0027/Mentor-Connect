@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mentor Connect — Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f6fb; }
+        .filter-btn {
+            padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;
+            background-color: #f3f4f6; color: #374151; transition: all 0.2s; cursor: pointer;
+        }
+        .filter-btn:hover { background-color: #e5e7eb; }
+        .filter-btn.active { background-color: #dbeafe; color: #2563eb; font-weight: 600; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="min-h-screen flex">
+        <!-- Sidebar (desktop) -->
+        <aside class="hidden md:flex md:w-72 lg:w-80 bg-white/80 backdrop-blur border-r border-gray-200 flex-col p-6">
+            <div class="flex items-center gap-3 mb-6">
+                <a href="index.html" class="flex items-center gap-3">
+                    <img src="https://placehold.co/56x56/3B82F6/FFFFFF?text=MC" alt="Logo" class="w-14 h-14 rounded-full shadow-sm" />
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-800">Mentor Connect</h1>
+                        <p class="text-sm text-gray-500">Connect • Learn • Grow</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1">
+                <a href="index.html" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 mb-1 block">Home</a>
+                <a href="login.html" class="w-full text-left px-3 py-2 rounded-lg bg-gray-100 text-gray-800 font-semibold mb-1 block">Login</a>
+                <a href="register.html" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 mb-1 block">Register</a>
+                <div class="mt-4 border-t pt-4">
+                    <p class="text-xs font-semibold text-gray-500 mb-2">Dashboards</p>
+                    <a href="student-dashboard.html" class="w-full text-left px-3 py-2 rounded-lg bg-gray-100 text-gray-800 font-semibold mb-1 block">Student</a>
+                    <a href="mentor-dashboard.html" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 block">Mentor</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 flex flex-col">
+            <header class="flex items-center justify-between bg-white border-b border-gray-200 px-6 py-3 md:py-4">
+                <div class="flex items-center gap-6">
+                    <input type="search" id="mentor-search-input" placeholder="Search mentors, skills..." class="hidden md:block px-4 py-2 rounded-lg border w-96 focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-2 rounded-lg hover:bg-gray-100" title="Notifications"><i data-lucide="bell" class="w-5 h-5 text-gray-600"></i></button>
+                    <button class="p-2 rounded-lg hover:bg-gray-100" title="Messages"><i data-lucide="mail" class="w-5 h-5 text-gray-600"></i></button>
+                    <button id="logout-button" class="px-3 py-1.5 text-sm rounded-lg bg-gray-200 text-gray-700 font-semibold">Logout</button>
+                </div>
+            </header>
+            <div id="app-container" class="p-6 overflow-auto">
+                <section id="student-dashboard-view">
+                    <div class="max-w-6xl mx-auto grid grid-cols-12 gap-6">
+                        <div class="col-span-12 lg:col-span-8 space-y-6">
+                            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                                <div class="flex items-center gap-4">
+                                    <img id="student-avatar" src="https://placehold.co/88x88/FEF3C7/F59E0B?text=S" class="w-20 h-20 rounded-full" alt="Student Avatar" />
+                                    <div>
+                                        <h2 id="student-name" class="text-2xl font-bold text-gray-800">Loading...</h2>
+                                        <p class="text-sm text-gray-500">Student</p>
+                                    </div>
+                                    <div class="ml-auto">
+                                        <button class="px-4 py-2 rounded-lg border">Edit Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- NEW: Upcoming Meetings Section -->
+                            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                                <h3 class="font-semibold text-gray-700 mb-4">Upcoming Meetings</h3>
+                                <div id="upcoming-meetings-container" class="space-y-3">
+                                   <p class="text-gray-500">Loading meetings...</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                                <h3 class="font-semibold text-gray-700 mb-4">Ongoing Mentorships</h3>
+                                <div id="ongoing-mentorships-container" class="space-y-4">
+                                    <p class="text-gray-500">Loading mentorships...</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                                <h3 class="font-semibold text-gray-700 mb-4">Find a New Mentor</h3>
+                                <div class="mb-4">
+                                    <input type="search" id="mentor-search-input-local" placeholder="Search by name, company, or skill..." class="w-full p-3 pl-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                </div>
+                                <div id="filter-container" class="flex flex-wrap gap-2 mb-4">
+                                    <button class="filter-btn active" data-skill="All">All</button>
+                                    <button class="filter-btn" data-skill="Product Strategy">Product Strategy</button>
+                                    <button class="filter-btn" data-skill="Career Growth">Career Growth</button>
+                                    <button class="filter-btn" data-skill="UX Research">UX Research</button>
+                                    <button class="filter-btn" data-skill="Python">Python</button>
+                                </div>
+                                <div id="mentor-list-container" class="space-y-4">
+                                    <p class="text-center text-gray-500">Loading mentors...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <aside class="col-span-12 lg:col-span-4 space-y-6">
+                            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                                <h4 class="font-semibold text-gray-700 mb-2">Notifications</h4>
+                                <p class="text-sm text-gray-600">You have 2 unread messages.</p>
+                            </div>
+                        </aside>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYQpNxmBE77NrxeQ0UB8THc7nkrZorMsc",
+            authDomain: "mentor-connect-d11a0.firebaseapp.com",
+            projectId: "mentor-connect-d11a0",
+            storageBucket: "mentor-connect-d11a0.appspot.com",
+            messagingSenderId: "729699493531",
+            appId: "1:729699493531:web:ee8462c56452280ef6083e"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if(window.lucide) {
+                lucide.createIcons();
+            }
+
+            const studentNameEl = document.getElementById('student-name');
+            const studentAvatarEl = document.getElementById('student-avatar');
+            const logoutButton = document.getElementById('logout-button');
+            const mentorListContainer = document.getElementById('mentor-list-container');
+            const searchInput = document.getElementById('mentor-search-input-local');
+            const filterContainer = document.getElementById('filter-container');
+            const ongoingMentorshipsContainer = document.getElementById('ongoing-mentorships-container');
+            const meetingsContainer = document.getElementById('upcoming-meetings-container');
+
+            let allMentors = [];
+            let sentRequests = [];
+            let currentUserId = null;
+
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUserId = user.uid;
+                    db.collection('users').doc(user.uid).get().then(doc => {
+                        if (doc.exists && doc.data().role === 'student') {
+                            const userData = doc.data();
+                            studentNameEl.textContent = userData.fullName || user.email;
+                            const initials = (userData.fullName || user.email).substring(0, 2).toUpperCase();
+                            studentAvatarEl.src = `https://placehold.co/88x88/FEF3C7/F59E0B?text=${initials}`;
+                            
+                            listenForSentRequests(user.uid);
+                            listenForMentors();
+                            listenForMentorships(user.uid);
+                        } else {
+                            window.location.href = 'login.html';
+                        }
+                    });
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+            
+            logoutButton.addEventListener('click', () => {
+                auth.signOut().then(() => window.location.href = 'index.html');
+            });
+
+             const listenForSentRequests = (studentId) => {
+                db.collection('mentorshipRequests').where('studentId', '==', studentId)
+                    .onSnapshot(snapshot => {
+                        sentRequests = snapshot.docs.map(doc => doc.data().mentorId);
+                        renderMentors(); 
+                    });
+            };
+            
+            const listenForMentors = () => {
+                db.collection('mentors').onSnapshot(snapshot => {
+                    allMentors = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderMentors();
+                }, error => console.error("Error fetching mentors: ", error));
+            };
+            
+            const listenForMentorships = (studentId) => {
+                const query = db.collection('mentorships').where('studentId', '==', studentId);
+                query.onSnapshot(async (snapshot) => {
+                    const mentorshipPromises = snapshot.docs.map(doc => {
+                        const mentorship = doc.data();
+                        return db.collection('mentors').doc(mentorship.mentorId).get().then(mentorDoc => {
+                            return mentorDoc.exists ? { ...mentorship, mentorInfo: mentorDoc.data() } : null;
+                        });
+                    });
+                    const mentorships = (await Promise.all(mentorshipPromises)).filter(m => m);
+
+                    const ongoing = mentorships.filter(m => m.status === 'ongoing');
+                    renderOngoingMentorships(ongoing);
+                    renderUpcomingMeetings(ongoing); // Pass all mentorships to render meetings
+
+                }, error => console.error("Error fetching mentorships: ", error));
+            };
+
+            const renderOngoingMentorships = (mentorships) => {
+                if(mentorships.length === 0) {
+                    ongoingMentorshipsContainer.innerHTML = `<p class="text-gray-500 text-sm">You have no ongoing mentorships.</p>`;
+                    return;
+                }
+                ongoingMentorshipsContainer.innerHTML = '';
+                mentorships.forEach(mentorship => {
+                    const mentorInfo = mentorship.mentorInfo;
+                    const card = `
+                        <div class="flex items-center justify-between border rounded-lg p-4">
+                            <div class="flex items-center gap-3">
+                                <img src="https://placehold.co/56x56/C7D2FE/4338CA?text=${mentorInfo.fullName.charAt(0)}" class="w-14 h-14 rounded-full" />
+                                <div>
+                                    <div class="font-semibold">${mentorInfo.fullName}</div>
+                                    <div class="text-sm text-gray-500">${mentorInfo.skills[0] || 'Mentor'}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-500 mb-2">Progress: ${mentorship.progress}%</div>
+                                <div class="w-48 bg-gray-100 h-2 rounded-full overflow-hidden">
+                                    <div class="h-2 rounded-full bg-blue-600" style="width:${mentorship.progress}%;"></div>
+                                </div>
+                                <button class="mt-3 text-sm text-blue-600 font-semibold">Message</button>
+                            </div>
+                        </div>
+                    `;
+                    ongoingMentorshipsContainer.insertAdjacentHTML('beforeend', card);
+                });
+            };
+            
+            const renderUpcomingMeetings = (mentorships) => {
+                meetingsContainer.innerHTML = '';
+                const allMeetings = [];
+                mentorships.forEach(mentorship => {
+                    if (mentorship.meetings && mentorship.meetings.length > 0) {
+                         mentorship.meetings.forEach(meeting => {
+                            if (meeting.status === 'scheduled') {
+                                allMeetings.push({ ...meeting, mentorName: mentorship.mentorInfo.fullName });
+                            }
+                        });
+                    }
+                });
+
+                if (allMeetings.length === 0) {
+                     meetingsContainer.innerHTML = `<p class="text-sm text-gray-500">No upcoming meetings scheduled.</p>`;
+                     return;
+                }
+                
+                allMeetings.sort((a,b) => a.scheduledAt.toDate() - b.scheduledAt.toDate());
+
+                allMeetings.forEach(meeting => {
+                    const date = meeting.scheduledAt.toDate();
+                    const formattedDate = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                    const formattedTime = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit'});
+                    const card = `
+                        <div class="flex items-center gap-4 border rounded-lg p-3 hover:bg-gray-50">
+                           <div class="flex flex-col items-center justify-center bg-blue-50 p-2 rounded-md">
+                                <span class="text-xs text-blue-700 font-semibold">${formattedDate.split(' ')[0]}</span>
+                                <span class="text-lg text-blue-800 font-bold">${formattedDate.split(' ')[1]}</span>
+                           </div>
+                            <div>
+                                <div class="font-medium text-gray-800">Meeting with ${meeting.mentorName}</div>
+                                <div class="text-sm text-gray-500">${formattedTime} - via Google Meet</div>
+                            </div>
+                            <a href="${meeting.link}" target="_blank" class="ml-auto px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200">Join</a>
+                        </div>
+                    `;
+                    meetingsContainer.insertAdjacentHTML('beforeend', card);
+                });
+            };
+
+            const renderMentors = () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeFilter = document.querySelector('.filter-btn.active').dataset.skill;
+                const filteredMentors = allMentors.filter(mentor => {
+                    const nameMatch = mentor.fullName.toLowerCase().includes(searchTerm);
+                    const skillMatch = mentor.skills.some(skill => skill.toLowerCase().includes(searchTerm));
+                    const companyMatch = mentor.company.toLowerCase().includes(searchTerm);
+                    const filterMatch = activeFilter === 'All' || mentor.skills.includes(activeFilter);
+                    return (nameMatch || skillMatch || companyMatch) && filterMatch;
+                });
+
+                mentorListContainer.innerHTML = '';
+                if (filteredMentors.length === 0) {
+                    mentorListContainer.innerHTML = `<p class="text-center text-gray-500">No mentors found.</p>`;
+                    return;
+                }
+
+                filteredMentors.forEach(mentor => {
+                    const isRequested = sentRequests.includes(mentor.id);
+                    const buttonText = isRequested ? 'Requested' : 'Request Mentorship';
+                    const buttonDisabled = isRequested || mentor.availabilityStatus !== 'available';
+                    const buttonClasses = isRequested 
+                        ? 'bg-green-500 text-white cursor-not-allowed'
+                        : mentor.availabilityStatus === 'available' 
+                            ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                            : 'bg-gray-200 text-gray-500 cursor-not-allowed';
+
+                    const mentorCard = `
+                        <div class="border rounded-lg p-4 flex items-center justify-between transition-all hover:shadow-md">
+                            <div class="flex items-center gap-4">
+                                <img src="https://placehold.co/56x56/E0E7FF/4F46E5?text=${mentor.fullName.charAt(0)}" class="w-14 h-14 rounded-full" />
+                                <div>
+                                    <div class="font-semibold text-gray-800">${mentor.fullName}</div>
+                                    <div class="text-sm text-gray-500">${mentor.jobTitle} at ${mentor.company}</div>
+                                    <div class="text-xs text-gray-400 mt-1">${mentor.skills.join(' • ')}</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm ${mentor.availabilityStatus === 'available' ? 'text-green-600' : 'text-gray-500'} font-semibold capitalize">${mentor.availabilityStatus}</div>
+                                <button data-mentor-id="${mentor.id}" class="request-btn mt-2 w-40 py-2 rounded-lg ${buttonClasses}" ${buttonDisabled ? 'disabled' : ''}>
+                                    ${buttonText}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    mentorListContainer.insertAdjacentHTML('beforeend', mentorCard);
+                });
+            };
+            
+            searchInput.addEventListener('input', renderMentors);
+            
+            filterContainer.addEventListener('click', (e) => {
+                if (e.target.closest('.filter-btn')) {
+                    document.querySelector('.filter-btn.active').classList.remove('active');
+                    e.target.closest('.filter-btn').classList.add('active');
+                    renderMentors();
+                }
+            });
+
+            mentorListContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.request-btn');
+                if (button && !button.disabled) {
+                    const mentorId = button.dataset.mentorId;
+                    if (!currentUserId || !mentorId) return;
+
+                    button.disabled = true;
+                    button.textContent = 'Sending...';
+
+                    db.collection('mentorshipRequests').add({
+                        studentId: currentUserId,
+                        mentorId: mentorId,
+                        status: 'pending',
+                        requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).catch(error => console.error("Error sending request: ", error));
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
+
+

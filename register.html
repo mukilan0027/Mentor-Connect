@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mentor Connect — Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f6fb; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="min-h-screen flex">
+        <!-- Sidebar (desktop) -->
+        <aside class="md:flex md:w-72 lg:w-80 bg-white/80 backdrop-blur border-r border-gray-200 flex-col p-6">
+            <div class="flex items-center gap-3 mb-6">
+                <a href="home.html" class="flex items-center gap-3">
+                    <img src="https://placehold.co/56x56/3B82F6/FFFFFF?text=MC" alt="Logo" class="w-14 h-14 rounded-full shadow-sm" />
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-800">Mentor Connect</h1>
+                        <p class="text-sm text-gray-500">Connect • Learn • Grow</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1">
+                <a href="home.html" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 mb-1 block">Home</a>
+                <a href="login.html" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 mb-1 block">Login</a>
+                <a href="register.html" class="w-full text-left px-3 py-2 rounded-lg bg-gray-100 text-gray-800 font-semibold mb-1 block">Register</a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 flex flex-col items-center justify-center p-4">
+            <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-gray-800">Create an Account</h2>
+                    <p class="text-gray-500">Join as a Student or Mentor to get started.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-6 p-1 bg-gray-100 rounded-lg">
+                    <button id="student-role-btn" class="role-btn active py-2 rounded-md">Student</button>
+                    <button id="mentor-role-btn" class="role-btn py-2 rounded-md">Mentor</button>
+                </div>
+
+                <form id="register-form" class="space-y-4">
+                    <!-- Common Fields -->
+                    <div>
+                        <label for="register-fullname" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="register-fullname" class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="e.g., Jane Doe" required />
+                    </div>
+                    <div>
+                        <label for="register-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="register-email" class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="you@domain.com" required />
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="register-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="register-password" class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="Min. 6 characters" required />
+                        </div>
+                        <div>
+                            <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                            <input type="password" id="confirm-password" class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="Confirm password" required />
+                        </div>
+                    </div>
+
+                    <!-- Mentor-Only Fields -->
+                    <div id="mentor-fields" class="hidden space-y-4 border-t pt-4">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <div>
+                                <label for="mentor-jobtitle" class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                <input type="text" id="mentor-jobtitle" class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="e.g., Software Engineer" />
+                            </div>
+                             <div>
+                                <label for="mentor-company" class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                                <input type="text" id="mentor-company" class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="e.g., Tech Corp" />
+                            </div>
+                        </div>
+                        <div>
+                            <label for="mentor-skills" class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+                            <input type="text" id="mentor-skills" class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="Enter skills separated by commas (e.g., Python, AI)" />
+                        </div>
+                    </div>
+
+                    <p id="error-message" class="text-sm text-red-500 text-center"></p>
+
+                    <div>
+                        <button type="submit" id="register-button" class="w-full py-3 mt-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors">
+                            Create Account
+                        </button>
+                    </div>
+
+                    <p class="text-sm text-gray-600 text-center">Already have an account? <a href="login.html" class="text-blue-600 font-semibold hover:underline">Sign in</a></p>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYQpNxmBE77NrxeQ0UB8THc7nkrZorMsc",
+            authDomain: "mentor-connect-d11a0.firebaseapp.com",
+            projectId: "mentor-connect-d11a0",
+            storageBucket: "mentor-connect-d11a0.appspot.com",
+            messagingSenderId: "729699493531",
+            appId: "1:729699493531:web:ee8462c56452280ef6083e"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const studentBtn = document.getElementById('student-role-btn');
+            const mentorBtn = document.getElementById('mentor-role-btn');
+            const mentorFields = document.getElementById('mentor-fields');
+            const registerForm = document.getElementById('register-form');
+            const errorMessage = document.getElementById('error-message');
+            const registerButton = document.getElementById('register-button');
+
+            let selectedRole = 'student';
+
+            const updateRoleSelection = () => {
+                if (selectedRole === 'student') {
+                    studentBtn.classList.add('active');
+                    mentorBtn.classList.remove('active');
+                    mentorFields.classList.add('hidden');
+                } else {
+                    mentorBtn.classList.add('active');
+                    studentBtn.classList.remove('active');
+                    mentorFields.classList.remove('hidden');
+                }
+            };
+
+            studentBtn.addEventListener('click', () => {
+                selectedRole = 'student';
+                updateRoleSelection();
+            });
+
+            mentorBtn.addEventListener('click', () => {
+                selectedRole = 'mentor';
+                updateRoleSelection();
+            });
+
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                errorMessage.textContent = '';
+                registerButton.disabled = true;
+                registerButton.textContent = 'Creating Account...';
+
+                const fullName = document.getElementById('register-fullname').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                if (password !== confirmPassword) {
+                    errorMessage.textContent = "Passwords do not match.";
+                    registerButton.disabled = false;
+                    registerButton.textContent = 'Create Account';
+                    return;
+                }
+
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        const userDoc = {
+                            fullName: fullName,
+                            email: user.email,
+                            role: selectedRole
+                        };
+
+                        db.collection('users').doc(user.uid).set(userDoc)
+                            .then(() => {
+                                if (selectedRole === 'mentor') {
+                                    const jobTitle = document.getElementById('mentor-jobtitle').value;
+                                    const company = document.getElementById('mentor-company').value;
+                                    const skills = document.getElementById('mentor-skills').value
+                                        .split(',')
+                                        .map(skill => skill.trim())
+                                        .filter(skill => skill);
+
+                                    const mentorProfile = {
+                                        fullName: fullName, // Use the same full name
+                                        jobTitle: jobTitle,
+                                        company: company,
+                                        skills: skills,
+                                        availabilityStatus: 'available'
+                                    };
+                                    
+                                    db.collection('mentors').doc(user.uid).set(mentorProfile)
+                                        .then(() => {
+                                            window.location.href = 'mentor-dashboard.html';
+                                        })
+                                        .catch(err => {
+                                            errorMessage.textContent = `Error creating mentor profile: ${err.message}`;
+                                        });
+
+                                } else {
+                                    window.location.href = 'student-dashboard.html';
+                                }
+                            })
+                            .catch(err => {
+                                errorMessage.textContent = `Error saving user data: ${err.message}`;
+                            });
+                    })
+                    .catch((error) => {
+                        errorMessage.textContent = error.message;
+                    })
+                    .finally(() => {
+                        registerButton.disabled = false;
+                        registerButton.textContent = 'Create Account';
+                    });
+            });
+        });
+    </script>
+    <style>
+        .role-btn {
+            transition: all 0.2s;
+            color: #4b5563;
+        }
+        .role-btn.active {
+            background-color: #ffffff;
+            color: #1f2937;
+            font-weight: 600;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</body>
+</html>
+

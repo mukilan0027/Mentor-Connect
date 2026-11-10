@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mentor Connect — Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/lucide.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f6fb; }
+        @media (min-width: 768px) {
+            ::-webkit-scrollbar { width: 8px; height: 8px; }
+            ::-webkit-scrollbar-track { background: transparent; }
+            ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 8px; }
+            ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="min-h-screen flex">
+        <!-- Sidebar (desktop) -->
+        <aside class="hidden md:flex md:w-72 lg:w-80 bg-white/80 backdrop-blur border-r border-gray-200 flex-col p-6">
+            <div class="flex items-center gap-3 mb-6">
+                <a href="home.html" class="flex items-center gap-3">
+                    <img src="https://placehold.co/56x56/3B82F6/FFFFFF?text=MC" alt="Logo" class="w-14 h-14 rounded-full shadow-sm" />
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-800">Mentor Connect</h1>
+                        <p class="text-sm text-gray-500">Connect • Learn • Grow</p>
+                    </div>
+                </a>
+            </div>
+            <nav class="flex-1">
+                <a href="home.html" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 mb-1 block">Home</a>
+                <a href="login.html" class="w-full text-left px-3 py-2 rounded-lg bg-gray-100 text-gray-800 font-semibold mb-1 block">Login</a>
+                <a href="register.html" class="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 mb-1 block">Register</a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 flex flex-col justify-center">
+            <div id="app-container" class="p-6">
+                <section id="login-view">
+                    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-8">
+                        <div class="text-center mb-6">
+                            <h2 class="text-3xl font-bold text-gray-800">Sign In</h2>
+                            <p class="text-sm text-gray-500 mt-2">Select your role and enter your details to continue.</p>
+                        </div>
+                        <div class="flex gap-3 mb-6 bg-gray-100 p-1 rounded-lg">
+                            <button id="student-role-btn" class="role-btn flex-1 py-2.5 rounded-md text-sm font-semibold">Student</button>
+                            <button id="mentor-role-btn" class="role-btn flex-1 py-2.5 rounded-md text-sm font-semibold">Mentor</button>
+                        </div>
+                        <form id="login-form" class="space-y-4">
+                            <div>
+                                <label for="login-email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" id="login-email" class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="you@domain.com" required />
+                            </div>
+                            <div>
+                                <label for="login-password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                <input type="password" id="login-password" class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-300" placeholder="password" required />
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <a href="#" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
+                            </div>
+                             <p id="error-message" class="text-sm text-red-600 text-center"></p>
+                            <div class="pt-2">
+                                <button type="submit" id="login-button" class="w-full text-center block py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700">Sign in as a <span id="role-text">Student</span></button>
+                            </div>
+                            <p class="text-sm text-gray-600 text-center !mt-6">No account? <a href="register.html" class="text-blue-600 font-semibold">Register here</a></p>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    
+    <script>
+        // IMPORTANT: Replace with your Firebase project's configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYQpNxmBE77NrxeQ0UB8THc7nkrZorMsc",
+            authDomain: "mentor-connect-d11a0.firebaseapp.com",
+            projectId: "mentor-connect-d11a0",
+            storageBucket: "http://mentor-connect-d11a0.firebasestorage.app",
+            messagingSenderId: "729699493531",
+            appId: "1:729699493531:web:ee8462c56452280ef6083e"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const studentBtn = document.getElementById('student-role-btn');
+            const mentorBtn = document.getElementById('mentor-role-btn');
+            const loginForm = document.getElementById('login-form');
+            const roleText = document.getElementById('role-text');
+            const errorMessage = document.getElementById('error-message');
+
+            let selectedRole = 'student';
+
+            const updateUIForRole = () => {
+                if (selectedRole === 'student') {
+                    studentBtn.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+                    studentBtn.classList.remove('text-gray-500');
+                    mentorBtn.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                    mentorBtn.classList.add('text-gray-500');
+                    roleText.textContent = 'Student';
+                } else {
+                    mentorBtn.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+                    mentorBtn.classList.remove('text-gray-500');
+                    studentBtn.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+                    studentBtn.classList.add('text-gray-500');
+                    roleText.textContent = 'Mentor';
+                }
+            };
+
+            studentBtn.addEventListener('click', () => {
+                selectedRole = 'student';
+                updateUIForRole();
+            });
+
+            mentorBtn.addEventListener('click', () => {
+                selectedRole = 'mentor';
+                updateUIForRole();
+            });
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                errorMessage.textContent = '';
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Signed in
+                        const user = userCredential.user;
+                        // Check user role in Firestore
+                        return db.collection('users').doc(user.uid).get();
+                    })
+                    .then((doc) => {
+                        if (doc.exists) {
+                            const userRole = doc.data().role;
+                            if (userRole === selectedRole) {
+                                // Role matches, redirect to the correct dashboard
+                                window.location.href = userRole === 'student' ? 'student-dashboard.html' : 'mentor-dashboard.html';
+                            } else {
+                                auth.signOut();
+                                errorMessage.textContent = `You are registered as a ${userRole}. Please select the correct role.`;
+                            }
+                        } else {
+                            // This case should ideally not happen if registration is correct
+                            auth.signOut();
+                            errorMessage.textContent = 'User data not found.';
+                        }
+                    })
+                    .catch((error) => {
+                        errorMessage.textContent = error.message;
+                    });
+            });
+
+            // Check for URL params to set initial role
+            const params = new URLSearchParams(window.location.search);
+            const roleFromUrl = params.get('role');
+            if (roleFromUrl === 'mentor') {
+                selectedRole = 'mentor';
+            }
+            
+            updateUIForRole();
+
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
+
